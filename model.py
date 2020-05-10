@@ -23,13 +23,14 @@ def model(x, t, seed, R_0, sigma, gamma, omega1, omega2, epsilon1, epsilon2, eps
 
     S,E,I,H,V,R,D,C = x 
 
+
+    #---------- Implemetacja szumu --------------- 
     '''for time in variables.TEMP_TIME:
         if time == t:
             srand = np.random.normal(scale=I**1)
             I = I + srand
             S = S - srand
             C = C + srand'''
-
 
     dSdt = - beta(t,kappa,seed)*S*I         
     dEdt = beta(t,kappa,seed)*S*I - sigma*E
@@ -54,18 +55,22 @@ def model_diff_solve(t, seed = variables.seed, kappa = variables.seed, R_0 = var
     """
     
     times = seed + t - t.min()
-    times = np.append([0],times)
+    times = np.append([0],times) # Roszerzamy tablicę czasów o 0, ponieważ dla tego czasu sa wartości variables.inits
     times = np.append(times , times.max()+1)
     variables.TEMP_TIME = times
     symulacja = odeint(model, variables.inits, times , args = (seed, R_0, variables.sigma, variables.gamma, variables.omega1, variables.omega2, variables.epsilon1, variables.epsilon2, variables.epsilon3, variables.control, kappa))
     return symulacja
 
 def death_function(t,seed,kappa): 
+    "Funkcja służąca do optymalizacji względem parametrów seed oraz kappa"
     times = seed + t - t.min()
-    times = np.append([0],times)
+    times = np.append([0],times) # Roszerzamy tablicę czasów o 0, ponieważ dla tego czasu sa wartości variables.inits
     times = np.append(times , times.max()+1)
     variables.TEMP_TIME = times
     symulacja = odeint(model, variables.inits, times , args = (seed, variables.TEMP_R_0, variables.sigma, variables.gamma, variables.omega1, variables.omega2, variables.epsilon1, variables.epsilon2, variables.epsilon3, variables.control, kappa))
+    #---------------------------------------------------------------------------------------------------------------------------------
+    #Część kodu odpowiedzialna, za wyłuskiwanie wartości iteresującej nas funkcji z tablicy rozwiązań symulacja, dla odpowednich chwil
+    #---------------------------------------------------------------------------------------------------------------------------------
     D = []
     for i in symulacja[1:]:
         D.append(i[6])
@@ -73,10 +78,12 @@ def death_function(t,seed,kappa):
     for i in range(1,len(D)):
         A.append(D[i]-D[i-1])
     arrA = np.array(A)
+    #---------------------------------------------------------------------------------------------------------------------------------
     return arrA
 
 
 def data_fit(R_0 = 2.6):
+    "Dopasowanie funkcji w zależności od parametru R_0"
     variables.TEMP_R_0 = R_0
-    popt, pcov = scipy.optimize.curve_fit(death_function, variables.date, variables.inc_deaths, p0 = (variables.seed,variables.kappa), bounds = (0,[100,1])) 
+    popt, pcov = scipy.optimize.curve_fit(death_function, variables.date, variables.inc_deaths, p0 = (variables.seed,variables.kappa), bounds = (0,[100,1])) # wartości parametrów oraz macierz kowariancji
     return popt, pcov
