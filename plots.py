@@ -30,6 +30,7 @@ def R_0andKappa():
     "Wykres zarażonych dla róznych parametrów R_0 i Kappa"
     for R_0 in lista_R_0:
         fig, ax = plt.subplots()
+        plt.xticks(fontsize=10, rotation=30)
         ppot ,pcov = model.data_fit(R_0 = R_0)
         date_span = []
         date = datetime(2020,3,4)
@@ -62,6 +63,7 @@ def Global_View(kind,mouths):
     mouths - liczba miesięcy, w któych ma zostac przeprowadzona symulacja
     """
     fig, ax = plt.subplots()
+    plt.xticks(fontsize=10, rotation=30)
     ppot ,pcov = model.data_fit()
     time_span = np.linspace(int(ppot[0]),30*mouths,30*mouths)
     for kappa in global_view_kappa_list:
