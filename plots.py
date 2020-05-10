@@ -39,7 +39,7 @@ def R_0andKappa():
             date_span.append(date)
         
         for kappa in kappa_list:
-            symulacja = model.model_diff_solve(variables.date, seed = ppot[0], kappa = kappa)
+            symulacja = model.model_diff_solve(variables.date, seed = ppot[0], kappa = kappa, R_0 = R_0)
             I = []
             for i in symulacja[1:-1]:
                 I.append(i[2])
@@ -65,7 +65,7 @@ def Global_View(kind,mouths):
     ppot ,pcov = model.data_fit()
     time_span = np.linspace(int(ppot[0]),30*mouths,30*mouths)
     for kappa in global_view_kappa_list:
-        symulacja = model.model_diff_solve(time_span,seed = ppot[0], kappa = kappa)
+        symulacja = model.model_diff_solve(time_span,seed = ppot[0], kappa = kappa, R_0 = 2.6)
         if kind == 'H':
             a,label = 3, 'Hospitalizowani'
         elif kind == 'V':
