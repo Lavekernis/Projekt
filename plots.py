@@ -30,7 +30,7 @@ def R_0andKappa():
     "Wykres zarażonych dla róznych parametrów R_0 i Kappa"
     for R_0 in lista_R_0:
         fig, ax = plt.subplots()
-        plt.xticks(fontsize=10, rotation=30)
+        plt.xticks(fontsize=10, rotation=6)
         ppot ,pcov = model.data_fit(R_0 = R_0)
         date_span = []
         date = datetime(2020,3,4)
